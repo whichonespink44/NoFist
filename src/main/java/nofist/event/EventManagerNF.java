@@ -39,26 +39,22 @@ public class EventManagerNF {
 
         this.punchBlocks = new ArrayList<Block>();
 
-        this.validOres = new ArrayList<String>(Arrays.asList(new String[]{
-            "logWood", "plankWood", "slabWood", "stairWood", "chest", "chestWood", "chestTrapped"
-        }));
+        this.validOres = new ArrayList<String>(Arrays.asList(nfConfig.UNPUNCHABLE_ORES.get()));
 
-        this.validBlocks = new ArrayList<String>(Arrays.asList(new String[]{
-            "minecraft:fence", "minecraft:fence_gate", "minecraft:double_wooden_slab"
-        }));
+        this.validBlocks = new ArrayList<String>(Arrays.asList(nfConfig.UNPUNCHABLE_BLOCKS.get()));
 
         Block block;
         ArrayList<ItemStack> ores;
 
         for (int i = 0; i < this.validOres.size(); i++) {
 
-            FMLLog.info(this.validOres.get(i));
+            //FMLLog.info(this.validOres.get(i));
             ores = new ArrayList<ItemStack>(OreDictionary.getOres(this.validOres.get(i)));
 
             for (int j = 0; j < ores.size(); j++) {
 
                 block = Block.getBlockFromItem(ores.get(j).getItem());
-                FMLLog.info(block.getLocalizedName());
+                //FMLLog.info(block.getLocalizedName());
 
                 if (!this.punchBlocks.contains(block)) {
                     this.punchBlocks.add(block);
@@ -69,7 +65,7 @@ public class EventManagerNF {
         for (int i = 0; i < this.validBlocks.size(); i++) {
 
             block = GameData.getBlockRegistry().getObject(new ResourceLocation(this.validBlocks.get(i)));
-            FMLLog.info(block.getLocalizedName());
+            //FMLLog.info(block.getLocalizedName());
 
             if (!this.punchBlocks.contains(block)) {
                 this.punchBlocks.add(block);
@@ -94,7 +90,7 @@ public class EventManagerNF {
 
                     int harvestLevel = (tool == null) ? -1 : tool.getItem().getHarvestLevel(tool, "axe");
 
-                    FMLLog.info("harvestLevel = %d", harvestLevel);
+                    //FMLLog.info("harvestLevel = %d", harvestLevel);
 
                     if (harvestLevel < 0) {
 
@@ -102,7 +98,9 @@ public class EventManagerNF {
 
                         //player.setHealth(player.getHealth() - 1f);
 
-                        player.attackEntityFrom(NoFist.punchDamage, 1f);
+                        if (nfConfig.PUNCH_DAMAGE.get() > 0) {
+                            player.attackEntityFrom(NoFist.punchDamageSource, nfConfig.PUNCH_DAMAGE.get());
+                        }
                     }
 
                     // We're not concerned about the player's 'off' hand, so we're breaking here no matter what.

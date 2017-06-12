@@ -32,7 +32,7 @@ import static nofist.api.NoFistAPI.configPath;
 public class NoFist {
 
     public static EventManagerNF eventMgr;
-    public static DamageSource punchDamage;
+    public static DamageSource punchDamageSource;
 
     @Instance(ModInfo.MOD_ID)
     public static NoFist instance;
@@ -48,8 +48,6 @@ public class NoFist {
         NoFistAPI.configPath = event.getModConfigurationDirectory() + File.separator + ModInfo.CONFIG_DIRECTORY + File.separator;
         NoFistAPI.nfConfig = new NFConfig();
         NoFistAPI.nfConfig.load(configPath + "NoFist.cfg");
-
-
     }
 
     @EventHandler
@@ -58,7 +56,7 @@ public class NoFist {
         eventMgr = new EventManagerNF();
         eventMgr.registerEventHandlers();
 
-        punchDamage = new DamageSource("punch").setDamageBypassesArmor();
+        punchDamageSource = new DamageSource("punch").setDamageBypassesArmor();
     }
 
     @EventHandler

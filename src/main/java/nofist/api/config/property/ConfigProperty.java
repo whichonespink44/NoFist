@@ -28,6 +28,7 @@ public class ConfigProperty {
         INTEGER,
         FLOAT,
         BOOLEAN,
-        STRING
+        STRING,
+        STRING_ARRAY
     }
 }

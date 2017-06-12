@@ -65,6 +65,11 @@ public abstract class Config {
         return property;
     }
 
+    public ConfigPropertyStringArray addProperty(ConfigPropertyStringArray property) {
+        this.addProp(property);
+        return property;
+    }
+
     public void load(String configFile) {
 
         config = new Configuration(new File(configFile));
@@ -130,6 +135,19 @@ public abstract class Config {
                             propString.category,
                             propString.valueString,
                             propString.description
+                        ));
+
+                        break;
+
+                    case STRING_ARRAY:
+
+                        ConfigPropertyStringArray propStringArray = (ConfigPropertyStringArray) prop;
+
+                        propStringArray.set(config.getStringList(
+                            propStringArray.name,
+                            propStringArray.category,
+                            propStringArray.valueStringArray,
+                            propStringArray.description
                         ));
 
                         break;
