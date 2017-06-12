@@ -29,7 +29,7 @@ public class EventManagerNF {
     private ArrayList<String> validBlocks;
 
     // Event handlers.
-    private final HarvestDropsEventNF HARVEST_DROPS_EVENT_HANDLER = new HarvestDropsEventNF();
+    private final BlockBreakEventNF BLOCK_BREAK_EVENT_HANDLER = new BlockBreakEventNF();
 
     private NFConfig nfConfig;
 
@@ -73,16 +73,16 @@ public class EventManagerNF {
         }
     }
 
-    public class HarvestDropsEventNF {
+    public class BlockBreakEventNF {
 
         @SubscribeEvent
-        public void onBlockHarvestDrops(BlockEvent.HarvestDropsEvent event)
+        public void onBlockBreak(BlockEvent.BreakEvent event)
         {
             Block block = event.getState().getBlock();
 
-            if (isValidBlock(block) && (event.getHarvester() != null) && event.getHarvester() instanceof EntityPlayer && !(event.getHarvester() instanceof FakePlayer)) {
+            if (isValidBlock(block) && (event.getPlayer() != null) && event.getPlayer() instanceof EntityPlayer && !(event.getPlayer() instanceof FakePlayer)) {
 
-                EntityPlayer player = (EntityPlayer)event.getHarvester();
+                EntityPlayer player = (EntityPlayer)event.getPlayer();
 
                 Iterable<ItemStack> tools = player.getHeldEquipment();
 
@@ -94,7 +94,11 @@ public class EventManagerNF {
 
                     if (harvestLevel < 0) {
 
-                        event.getDrops().clear();
+                        //event.getDrops().clear();
+
+                        if (!player.isCreative()) {
+                            event.setCanceled(true);
+                        }
 
                         //player.setHealth(player.getHealth() - 1f);
 
@@ -125,7 +129,7 @@ public class EventManagerNF {
 
         logEventMessage("Registering NoFist's event handlers...");
 
-        MinecraftForge.EVENT_BUS.register(HARVEST_DROPS_EVENT_HANDLER);
+        MinecraftForge.EVENT_BUS.register(BLOCK_BREAK_EVENT_HANDLER);
 
         logEventMessage("NoFist's event handlers have been registered successfully.");
     }
