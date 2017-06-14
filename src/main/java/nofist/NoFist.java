@@ -26,7 +26,7 @@ import static nofist.api.NoFistAPI.configPath;
     modid                    = ModInfo.MOD_ID,
     name                     = ModInfo.MOD_NAME,
     version                  = ModInfo.MOD_VERSION,
-    dependencies             = "required-after:Forge@[" + ModInfo.MCF_MINVER + "," + ModInfo.MCF_MAXVER + ")" + ModInfo.MOD_DEPS,
+    dependencies             = "required-after:forge@[" + ModInfo.MCF_MINVER + "," + ModInfo.MCF_MAXVER + ")" + ModInfo.MOD_DEPS,
     acceptableRemoteVersions = "*"
 )
 public class NoFist {
