@@ -1,16 +1,14 @@
 buildscript {
     repositories {
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
+        maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+//Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 sourceCompatibility = targetCompatibility = 1.8
 
@@ -24,7 +22,7 @@ def parseprops(File cfg) {
 
 ext.ref = parseprops(file('build.properties'))
 ext.ref.mod_deps = parseprops(file('mod_deps.properties'))
-
+    
 group = ref.package_base + '.' + ref.mod_id
 archivesBaseName = (ref.mod_id as String) + '-' + (ref.mc_version as String)
 version = ref.mod_version
@@ -65,7 +63,7 @@ processResources {
 }
 
 sourceJar {classifier = 'src'}
-
+                
 // For a debugging session used 'gradle -DEBUG [runClient|runServer]'
 allprojects {
     tasks.withType(JavaExec) {
@@ -75,7 +73,7 @@ allprojects {
             jvmArgs '-agentlib:jdwp=transport=dt_socket,address=localhost:5005,server=y,suspend=y'
     }
 }
-
+        
 // use -Dwarn|-Dwarnall CLI arguement for verbose compiler warnings
 // -Dwarn covers the 3 most common warnings only
 tasks.withType(JavaCompile) {
