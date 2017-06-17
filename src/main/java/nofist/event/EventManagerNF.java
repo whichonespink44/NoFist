@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
@@ -78,32 +80,35 @@ public class EventManagerNF {
         @SubscribeEvent
         public void onBlockBreak(BlockEvent.BreakEvent event)
         {
-            Block block = event.getState().getBlock();
+            IBlockState state = event.getState();
+            Block block = state.getBlock();
 
             if (isValidBlock(block) && (event.getPlayer() != null) && event.getPlayer() instanceof EntityPlayer && !(event.getPlayer() instanceof FakePlayer)) {
 
                 EntityPlayer player = (EntityPlayer)event.getPlayer();
-
                 Iterable<ItemStack> tools = player.getHeldEquipment();
 
                 for (ItemStack tool : tools) {
 
-                    int harvestLevel = (tool == null) ? -1 : tool.getItem().getHarvestLevel(tool, "axe", player, event.getState());
+                    int harvestLevel = (tool == null) ? -1 : tool.getItem().getHarvestLevel(tool, "axe", player, state);
 
                     //FMLLog.info("harvestLevel = %d", harvestLevel);
 
                     if (harvestLevel < 0) {
 
-                        //event.getDrops().clear();
-
                         if (!player.isCreative()) {
-                            event.setCanceled(true);
-                        }
 
-                        //player.setHealth(player.getHealth() - 1f);
+                            event.setCanceled(true);
+                            String message = "punch_block";
 
                         if (nfConfig.PUNCH_DAMAGE.get() > 0) {
                             player.attackEntityFrom(NoFist.punchDamageSource, nfConfig.PUNCH_DAMAGE.get());
+                                message = "punch_block_with_damage";
+                            }
+
+                            if (nfConfig.SHOW_MESSAGES.get() && player.getHealth() > 0f) {
+                                player.sendMessage(new TextComponentTranslation(message));
+                            }
                         }
                     }
 
