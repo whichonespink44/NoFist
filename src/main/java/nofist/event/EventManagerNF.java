@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.FakePlayer;
@@ -25,8 +27,8 @@ import nofist.api.config.NFConfig;
 public class EventManagerNF {
 
     private ArrayList<Block> punchBlocks;
-    private ArrayList<String> validOres;
-    private ArrayList<String> validBlocks;
+    private ArrayList<String> unpunchableOres;
+    private ArrayList<String> unpunchableBlocks;
 
     // Event handlers.
     private final BlockBreakEventNF BLOCK_BREAK_EVENT_HANDLER = new BlockBreakEventNF();
@@ -39,17 +41,17 @@ public class EventManagerNF {
 
         this.punchBlocks = new ArrayList<Block>();
 
-        this.validOres = new ArrayList<String>(Arrays.asList(nfConfig.UNPUNCHABLE_ORES.get()));
+        this.unpunchableOres = new ArrayList<String>(Arrays.asList(nfConfig.UNPUNCHABLE_ORES.get()));
 
-        this.validBlocks = new ArrayList<String>(Arrays.asList(nfConfig.UNPUNCHABLE_BLOCKS.get()));
+        this.unpunchableBlocks = new ArrayList<String>(Arrays.asList(nfConfig.UNPUNCHABLE_BLOCKS.get()));
 
         Block block;
         ArrayList<ItemStack> ores;
 
-        for (int i = 0; i < this.validOres.size(); i++) {
+        for (int i = 0; i < this.unpunchableOres.size(); i++) {
 
-            //FMLLog.info(this.validOres.get(i));
-            ores = new ArrayList<ItemStack>(OreDictionary.getOres(this.validOres.get(i)));
+            //FMLLog.info(this.unpunchableOres.get(i));
+            ores = new ArrayList<ItemStack>(OreDictionary.getOres(this.unpunchableOres.get(i)));
 
             for (int j = 0; j < ores.size(); j++) {
 
@@ -62,9 +64,9 @@ public class EventManagerNF {
             }
         }
 
-        for (int i = 0; i < this.validBlocks.size(); i++) {
+        for (int i = 0; i < this.unpunchableBlocks.size(); i++) {
 
-            block = GameData.getBlockRegistry().getObject(new ResourceLocation(this.validBlocks.get(i)));
+            block = GameData.getBlockRegistry().getObject(new ResourceLocation(this.unpunchableBlocks.get(i)));
             //FMLLog.info(block.getLocalizedName());
 
             if (!this.punchBlocks.contains(block)) {
@@ -78,32 +80,35 @@ public class EventManagerNF {
         @SubscribeEvent
         public void onBlockBreak(BlockEvent.BreakEvent event)
         {
-            Block block = event.getState().getBlock();
+            IBlockState state = event.getState();
+            Block block = state.getBlock();
 
             if (isValidBlock(block) && (event.getPlayer() != null) && event.getPlayer() instanceof EntityPlayer && !(event.getPlayer() instanceof FakePlayer)) {
 
                 EntityPlayer player = (EntityPlayer)event.getPlayer();
-
                 Iterable<ItemStack> tools = player.getHeldEquipment();
 
                 for (ItemStack tool : tools) {
 
-                    int harvestLevel = (tool == null) ? -1 : tool.getItem().getHarvestLevel(tool, "axe");
+                    int harvestLevel = (tool == null) ? -1 : tool.getItem().getHarvestLevel(tool, "axe", player, state);
 
                     //FMLLog.info("harvestLevel = %d", harvestLevel);
 
                     if (harvestLevel < 0) {
 
-                        //event.getDrops().clear();
-
                         if (!player.isCreative()) {
-                            event.setCanceled(true);
-                        }
 
-                        //player.setHealth(player.getHealth() - 1f);
+                            event.setCanceled(true);
+                            String message = "punch_block";
 
                         if (nfConfig.PUNCH_DAMAGE.get() > 0) {
                             player.attackEntityFrom(NoFist.punchDamageSource, nfConfig.PUNCH_DAMAGE.get());
+                                message = "punch_block_with_damage";
+                            }
+
+                            if (nfConfig.SHOW_MESSAGES.get() && player.getHealth() > 0f) {
+                                player.sendMessage(new TextComponentTranslation(message));
+                            }
                         }
                     }
 
