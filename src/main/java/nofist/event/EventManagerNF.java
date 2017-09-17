@@ -15,7 +15,6 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameData;
 import net.minecraftforge.oredict.OreDictionary;
 
 import nofist.NoFist;
@@ -66,7 +65,7 @@ public class EventManagerNF {
 
         for (int i = 0; i < this.unpunchableBlocks.size(); i++) {
 
-            block = GameData.getBlockRegistry().getObject(new ResourceLocation(this.unpunchableBlocks.get(i)));
+            block = Block.REGISTRY.getObject(new ResourceLocation(this.unpunchableBlocks.get(i)));
             //FMLLog.info(block.getLocalizedName());
 
             if (!this.punchBlocks.contains(block)) {
